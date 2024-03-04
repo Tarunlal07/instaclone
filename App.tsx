@@ -1,118 +1,118 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {SafeAreaView} from 'react-native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {NavigationContainer} from '@react-navigation/native';
+import Homescreen from './screens/Homescreen';
+import LoginScreen from './screens/LoginScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import MyProfile from './screens/MyProfile';
+import {faHouse} from '@fortawesome/free-solid-svg-icons/faHouse';
+import {faUser} from '@fortawesome/free-solid-svg-icons';
+import Post from './screens/Post';
+import {PostsProvider} from './context/PostContext';
+import NewPostScreen from './screens/NewPostScreen';
+import {faSquarePlus} from '@fortawesome/free-regular-svg-icons';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const HomeTabs = () => {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Feed"
+        component={Homescreen}
+        options={{
+          headerShown: false,
+          tabBarLabel: '',
+          tabBarIcon: ({focused}) => (
+            <FontAwesomeIcon
+              icon={faHouse}
+              size={20}
+              style={{color: focused ? '#C13584' : 'black', marginBottom: -15}}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="New Post"
+        component={NewPostScreen}
+        options={{
+          headerShown: true,
+          headerTitle:'New Post',
+          tabBarLabel: '',
+          tabBarIcon: ({focused}) => (
+            <FontAwesomeIcon
+              icon={faSquarePlus}
+              size={24}
+              style={{
+                color: focused ? '#C13584' : 'black',
+                marginBottom: -15,
+              }}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="myProfile"
+        component={MyProfile}
+        options={{
+          headerShown: false,
+          tabBarLabel: '',
+          tabBarIcon: ({focused}) => (
+            <FontAwesomeIcon
+              icon={faUser}
+              size={20}
+              style={{color: focused ? '#C13584' : 'black', marginBottom: -15}}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
-}
+};
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <PostsProvider>
+      <NavigationContainer>
+        <SafeAreaView style={{flex: 1}}>
+          <Stack.Navigator initialRouteName="Login">
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Home"
+              component={HomeTabs}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{headerShown: true}}
+            />
+            <Stack.Screen
+              name="post"
+              component={Post}
+              options={{
+                headerShown: true,
+                title: 'My Posts',
+                headerBackTitleVisible: false,
+                headerBackTitleStyle: {
+                  fontSize: 12,
+                },
+                headerTintColor: '#C13584',
+              }}
+            />
+          </Stack.Navigator>
+        </SafeAreaView>
+      </NavigationContainer>
+    </PostsProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
